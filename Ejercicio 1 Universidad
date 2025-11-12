@@ -1,0 +1,181 @@
+import express, { Request, Response } from "express";
+import cors from "cors";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Tipos y variables
+interface Atencion {
+  id: number;
+  cedula: string;
+  tipo: string;
+  subtipo?: string | null;
+  canal?: string | null;
+  observaciones?: string | null;
+  fecha: string;
+}
+
+let atenciones: Atencion[] = [];
+let id = 1;
+
+// Funciones por si las moscas
+const ahora = () => new Date().toISOString();
+const cedulaValida = (c: string) => /^\d{5,12}$/.test(c);
+
+// Crear una atención
+app.post("/api/atenciones", (req: Request, res: Response) => {
+  const { cedula, tipo, subtipo, canal, observaciones } = req.body;
+  if (!cedulaValida(cedula)) return res.status(400).json({ msg: "Cédula inválida" });
+  if (!tipo) return res.status(400).json({ msg: "Falta el tipo" });
+  const hoy = ahora().slice(0, 10);
+  const duplicado = atenciones.find(
+    (a) => a.cedula === cedula && a.tipo === tipo && a.subtipo === subtipo && a.fecha.slice(0, 10) === hoy
+  );
+  if (duplicado) return res.status(409).json({ msg: "Duplicado hoy" });
+
+  const nueva: Atencion = {
+    id: id++,
+    cedula,
+    tipo,
+    subtipo: subtipo || null,
+    canal: canal || null,
+    observaciones: observaciones || null,
+    fecha: ahora(),
+  };
+  atenciones.push(nueva);
+  res.status(201).json(nueva);
+});
+
+// Para Listar
+app.get("/api/atenciones", (req: Request, res: Response) => {
+  const { cedula } = req.query;
+  if (cedula) res.json(atenciones.filter((a) => a.cedula === String(cedula)));
+  else res.json(atenciones);
+});
+
+// ---- Estadísticas ----
+app.get("/api/atenciones/estadisticas", (req: Request, res: Response) => {
+  const tipos = ["llamada", "asesoria", "seguimiento"];
+  const subs = ["estudiante", "directivo", "docente", "administrativo"];
+  const stats: any = { total: atenciones.length, porTipo: {}, porSubtipo: {}, porDia: {} };
+
+  tipos.forEach((t) => (stats.porTipo[t] = atenciones.filter((a) => a.tipo === t).length));
+  subs.forEach((s) => (stats.porSubtipo[s] = atenciones.filter((a) => a.subtipo === s).length));
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const k = d.toISOString().slice(0, 10);
+    stats.porDia[k] = 0;
+  }
+  atenciones.forEach((a) => {
+    const k = a.fecha.slice(0, 10);
+    if (stats.porDia[k] != null) stats.porDia[k]++;
+  });
+
+  res.json(stats);
+});
+
+// Transferir de asesoría a llamada 
+app.post("/api/atenciones/transferir/:cedula", (req: Request, res: Response) => {
+  const { cedula } = req.params;
+  if (!cedulaValida(cedula)) return res.status(400).json({ msg: "Cédula inválida" });
+  const existe = atenciones.some((a) => a.cedula === cedula && a.tipo === "asesoria");
+  if (!existe) return res.status(404).json({ msg: "Sin asesoría previa" });
+
+  const nueva: Atencion = {
+    id: id++,
+    cedula,
+    tipo: "llamada",
+    fecha: ahora(),
+    canal: "telefónica",
+    observaciones: "Transferido desde asesoría",
+  };
+  atenciones.push(nueva);
+  res.json({ msg: "Transferido", nueva });
+});
+
+// Para exportar, importar y eliminar
+app.get("/api/atenciones/export", (req: Request, res: Response) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(JSON.stringify(atenciones, null, 2));
+});
+
+app.post("/api/atenciones/import", (req: Request, res: Response) => {
+  const data = req.body;
+  if (!Array.isArray(data)) return res.status(400).json({ msg: "Debe ser un array" });
+  atenciones = data.map((d, i) => ({
+    id: d.id || i + 1,
+    cedula: d.cedula,
+    tipo: d.tipo,
+    subtipo: d.subtipo || null,
+    canal: d.canal || null,
+    observaciones: d.observaciones || null,
+    fecha: d.fecha || ahora(),
+  }));
+  id = atenciones.length + 1;
+  res.json({ msg: "Importado", total: atenciones.length });
+});
+
+app.delete("/api/atenciones/:id", (req: Request, res: Response) => {
+  const num = Number(req.params.id);
+  const len = atenciones.length;
+  atenciones = atenciones.filter((a) => a.id !== num);
+  if (len === atenciones.length) return res.status(404).json({ msg: "No encontrado" });
+  res.json({ msg: "Eliminado" });
+});
+
+// Frontend generado por AI
+app.get("/", (req: Request, res: Response) => {
+  res.send(`<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Atenciones</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>body{background:#f3f4f6}</style></head>
+<body class="p-6">
+<h1 class="text-2xl font-bold mb-3">Sistema de Atenciones</h1>
+<form id="f" class="space-y-2">
+<input id="c" placeholder="Cédula" class="border p-1 w-full"/>
+<select id="t"><option>asesoria</option><option>llamada</option><option>seguimiento</option></select>
+<select id="s"><option value="">(sin subtipo)</option><option>estudiante</option><option>directivo</option><option>docente</option><option>administrativo</option></select>
+<select id="cn"><option value="">(sin canal)</option><option>presencial</option><option>virtual</option><option>telefónica</option></select>
+<textarea id="o" placeholder="Observaciones" class="border p-1 w-full"></textarea>
+<button class="bg-blue-500 text-white px-2 py-1 rounded">Guardar</button>
+<button type="button" id="tr" class="bg-yellow-500 text-white px-2 py-1 rounded">Transferir</button>
+</form>
+<hr class="my-4">
+<button id="r" class="bg-gray-300 px-2 py-1">Refrescar</button>
+<button id="e" class="bg-green-500 text-white px-2 py-1">Exportar</button>
+<input type="file" id="imp" accept="application/json"/>
+<table class="table-auto border mt-3 text-sm w-full">
+<thead><tr class="bg-gray-100"><th>ID</th><th>Cédula</th><th>Tipo</th><th>Subtipo</th><th>Canal</th><th>Fecha</th><th>Obs</th><th></th></tr></thead>
+<tbody id="b"></tbody></table>
+<pre id="est" class="mt-3 bg-gray-50 p-2"></pre>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+const api="/api/atenciones";
+async function listar(){
+  const r=await axios.get(api);const d=r.data;const b=document.getElementById("b");
+  b.innerHTML=d.length?d.slice().reverse().map(a=>
+   \`<tr><td>\${a.id}</td><td>\${a.cedula}</td><td>\${a.tipo}</td><td>\${a.subtipo||""}</td><td>\${a.canal||""}</td><td>\${new Date(a.fecha).toLocaleString()}</td><td>\${a.observaciones||""}</td><td><button onclick="elim(\${a.id})" class='text-red-500'>🗑️</button></td></tr>\`
+  ).join(""):"<tr><td colspan=8 class='p-2 text-center'>Sin datos</td></tr>";
+  const s=await axios.get(api+"/estadisticas");
+  document.getElementById("est").textContent=JSON.stringify(s.data,null,2);
+}
+async function elim(id){if(confirm("Eliminar?")){await axios.delete(api+"/"+id);listar();}}
+document.getElementById("f").onsubmit=async e=>{
+ e.preventDefault();
+ await axios.post(api,{cedula:c.value,tipo:t.value,subtipo:s.value,canal:cn.value,observaciones:o.value});
+ listar();e.target.reset();
+};
+tr.onclick=async()=>{await axios.post(api+"/transferir/"+c.value);listar();}
+e.onclick=async()=>{const r=await axios.get(api+"/export");const blob=new Blob([JSON.stringify(r.data,null,2)],{type:"application/json"});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download="atenciones.json";a.click();}
+imp.onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();await axios.post(api+"/import",JSON.parse(t));listar();}
+r.onclick=listar;listar();
+</script>
+</body></html>`);
+});
+
+// ---- Servidor ----
+app.listen(3000, () => console.log("✅ Servidor en http://localhost:3000"));
+
