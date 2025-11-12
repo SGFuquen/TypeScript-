@@ -1,0 +1,73 @@
+import express, { Request, Response } from "express";
+import cors from "cors";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+interface Cita {
+  id: number;
+  paciente: string;
+  fecha: string;
+  hora: string;
+  medico: string;
+}
+let citas: Cita[] = [];
+let id = 1;
+
+app.post("/api/citas", (req: Request, res: Response) => {
+  const { paciente, fecha, hora, medico } = req.body;
+  if (!paciente || !fecha || !hora || !medico)
+    return res.status(400).json({ msg: "Faltan datos" });
+  const nueva = { id: id++, paciente, fecha, hora, medico };
+  citas.push(nueva);
+  res.json(nueva);
+});
+
+app.get("/api/citas", (_, res) => res.json(citas));
+
+app.delete("/api/citas/:id", (req, res) => {
+  const num = +req.params.id;
+  citas = citas.filter(c => c.id !== num);
+  res.json({ msg: "Cita cancelada" });
+});
+
+// Html también con AI
+app.get("/", (_, res) => {
+  res.send(`<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Citas Médicas</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head><body class="bg-gray-100 p-6">
+<h1 class="text-2xl font-bold mb-3">🩺 Citas Médicas</h1>
+<form id=f class="bg-white p-4 rounded shadow space-y-2">
+<input id=paciente placeholder="Paciente" class="border p-1 w-full">
+<input id=fecha type=date class="border p-1 w-full">
+<input id=hora type=time class="border p-1 w-full">
+<input id=medico placeholder="Médico" class="border p-1 w-full">
+<button class="bg-blue-500 text-white px-3 py-1 rounded w-full">Guardar</button>
+</form>
+<table class="table-auto w-full mt-4 bg-white rounded shadow text-sm">
+<thead class="bg-gray-200"><tr><th>ID</th><th>Paciente</th><th>Fecha</th><th>Hora</th><th>Médico</th><th></th></tr></thead>
+<tbody id=tbody></tbody></table>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+const api="/api/citas",f=document.getElementById("f"),tbody=document.getElementById("tbody");
+async function listar(){
+  const r=await axios.get(api);
+  tbody.innerHTML=r.data.length?
+  r.data.map(c=>\`<tr><td>\${c.id}</td><td>\${c.paciente}</td><td>\${c.fecha}</td><td>\${c.hora}</td><td>\${c.medico}</td><td><button onclick="borrar(\${c.id})" class='text-red-500'>🗑️</button></td></tr>\`).join(""):
+  "<tr><td colspan=6 class='text-center p-2 text-gray-500'>Sin citas</td></tr>";
+}
+f.onsubmit=async e=>{
+  e.preventDefault();
+  await axios.post(api,{paciente:f.paciente.value,fecha:f.fecha.value,hora:f.hora.value,medico:f.medico.value});
+  f.reset(); listar();
+};
+async function borrar(id){await axios.delete(api+"/"+id);listar();}
+listar();
+</script></body></html>`);
+});
+
+app.listen(3000, () => console.log("✅ Servidor en http://localhost:3000"));
+
