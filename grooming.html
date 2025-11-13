@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Maison Paws - Grooming & Boutique</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --muted:#7b7b7b;
+    --accent:#cda15d;
+    --accent-2:#f0e6d8;
+    --card:#ffffff;
+    --shadow: rgba(25,25,25,0.06);
+    --btn-color:#cf7a60;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:"Poppins",system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    background:linear-gradient(180deg,var(--bg) 0%, #fbfbfb 100%);color:#111;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border-bottom:1px solid #f2efe9;position:sticky;top:0;background:#fff;z-index:100}
+  .brand {display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),#fff);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:"Playfair Display";color:#3b2f2f;font-size:20px;box-shadow:0 6px 18px var(--shadow)}
+  .brand h1{margin:0;font-family:"Playfair Display";font-size:20px;color:#2b2b2b}
+  nav{display:flex;gap:10px}
+  nav button{background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:600;color:#4b4b4b}
+  nav button:hover{transform:translateY(-3px)}
+  .cta{background:#2b2b2b;color:white;padding:8px 12px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+
+  .cart-icon{position:fixed;right:18px;top:18px;z-index:120;background:rgba(255,255,255,0.98);border-radius:12px;padding:10px;box-shadow:0 6px 18px var(--shadow);display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid #f1e9db}
+  .cart-count{background:var(--accent);color:white;padding:4px 8px;border-radius:999px;font-weight:700;font-size:13px}
+
+  main{max-width:1200px;margin:28px auto;padding:0 18px}
+  .hero{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:center}
+  .heroCard{background:linear-gradient(180deg,#fff,#fff);border-radius:18px;padding:28px;box-shadow:0 10px 30px var(--shadow)}
+  .heroCard h2{font-family:"Playfair Display";font-size:34px;margin:0 0 8px;color:#2b2b2b}
+  .heroCard p{color:var(--muted);margin:0 0 14px}
+  .heroImg{border-radius:18px;overflow:hidden;box-shadow:0 10px 30px var(--shadow)}
+  .heroImg img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .gallery img{width:100%;height:120px;object-fit:cover;border-radius:12px;display:block}
+
+  section{margin-bottom:18px}
+  .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 18px var(--shadow)}
+  h3{font-family:"Playfair Display";margin:0 0 8px}
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .feature{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff);border:1px solid #f3efe7;text-align:center;color:#333}
+
+  /* Appointments form */
+  .formRow{display:flex;gap:10px}
+  .formCol{flex:1}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:8px;font-weight:600}
+  input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:6px;font-size:14px}
+  .small{font-size:13px;color:var(--muted)}
+
+  .appointmentsList{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .appCard{display:flex;gap:12px;align-items:center;border-radius:12px;padding:10px;border:1px solid #f1e6d8}
+  .appCard img{width:72px;height:72px;border-radius:10px;object-fit:cover}
+
+  /* Shop layout */
+  .shopWrap{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:12px}
+  @media(max-width:980px){.hero{grid-template-columns:1fr}.shopWrap{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+  .productsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .productCard{background:#fff;border-radius:6px;padding:14px;text-align:left;border:1px solid #f3efe7;display:flex;flex-direction:column;gap:8px;align-items:stretch}
+  .productImg{width:100%;height:140px;object-fit:cover;border-radius:6px}
+  .productTitle{font-size:14px;margin:6px 0 4px;height:40px;overflow:hidden}
+  .productPrice{font-weight:700;color:#2b2b2b;margin-bottom:6px}
+  .addBtn{width:100%;background:var(--btn-color);border:0;color:#fff;padding:10px;border-radius:8px;cursor:pointer;font-weight:700}
+  .addBtn.added{opacity:0.9;transform:scale(.98)}
+
+  /* cart panel */
+  .cartPanel{position:sticky;top:90px;border-radius:12px;padding:12px;background:#fff;border:1px solid #f3efe7;box-shadow:0 10px 30px var(--shadow)}
+  .cartList{min-height:80px}
+  .cartItem{display:flex;align-items:center;justify-content:space-between;padding:8px;border-bottom:1px dashed #f2eee6}
+  .trashBtn{background:transparent;border:0;font-size:18px;cursor:pointer}
+
+  .checkoutBtn{width:100%;padding:10px;border-radius:10px;background:#2b2b2b;color:#fff;border:0;margin-top:10px;font-weight:700}
+
+  .paymentMethods{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .pmOption{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid #eee;cursor:pointer}
+  .pmOption input{display:none}
+  .pmOption.active{border-color:var(--accent);background:linear-gradient(90deg,#fff,#fff)}
+
+  .logosvg{width:48px;height:28px;display:block}
+
+  .payForm{margin-top:12px}
+  .payRow{display:flex;gap:8px}
+  .payRow .formCol{flex:1}
+
+  .floatAdd{position:fixed;right:26px;top:26px;padding:6px 9px;background:var(--accent);color:#fff;border-radius:999px;transform:translateY(-20px);opacity:0;pointer-events:none;transition:all .6s cubic-bezier(.2,.9,.2,1)}
+  .floatAdd.show{transform:translateY(0);opacity:1}
+
+  footer{padding:30px;text-align:center;color:var(--muted);margin-top:40px}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MP</div>
+    <div style="margin-left:12px">
+      <div class="brand"><h1>Maison Paws</h1></div>
+      <div style="font-size:12px;color:var(--muted)">Grooming • Spa • Boutique</div>
+    </div>
+    <nav style="margin-left:22px">
+      <button onclick="showSection('home')" id="nav-home">Inicio</button>
+      <button onclick="showSection('appointments')" id="nav-appt">Agendar cita</button>
+      <button onclick="showSection('shop')" id="nav-shop">Tienda</button>
+    </nav>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="cta" onclick="showSection('appointments')">Reservar</button>
+
+    <div class="cart-icon" id="cartToggle" title="Abrir carrito" onclick="toggleCart()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:block">
+        <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="#3b3b3b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="20" r="1.6" fill="#3b3b3b"/><circle cx="18" cy="20" r="1.6" fill="#3b3b3b"/>
+      </svg>
+      <div style="font-size:13px;color:#222">Carrito</div>
+      <div class="cart-count" id="cartCount">0</div>
+    </div>
+
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="home" class="active">
+    <div class="hero">
+      <div class="heroCard">
+        <h2>Cuidado boutique para tu mascota</h2>
+        <p>Maison Paws ofrece tratamientos premium, productos seleccionados y un servicio pensado para reducir el estrés de tu animal. Reserva, compra y consiente con la mejor calidad.</p>
+
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="cta" onclick="showSection('appointments')">Agendar cita</button>
+          <button class="addBtn" style="background:transparent;border:1px solid #ddd;color:#444" onclick="showSection('shop')">Ir a la tienda</button>
+        </div>
+
+        <div style="margin-top:18px" class="small">
+          <strong>Nuestros servicios:</strong>
+          <ul style="margin:8px 0 0 18px;color:var(--muted)">
+            <li>Baño & secado con productos hipoalergénicos</li>
+            <li>Corte y estilizado profesional</li>
+            <li>Spa relajante y tratamientos dermatológicos</li>
+          </ul>
+        </div>
+
+        <div class="gallery" aria-hidden="false">
+          <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1000&q=80&auto=format&fit=crop" alt="pet1">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=1000&q=80&auto=format&fit=crop" alt="pet2">
+          <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1000&q=80&auto=format&fit=crop" alt="pet3">
+        </div>
+      </div>
+
+      <div class="heroImg">
+        <img src="https://images.unsplash.com/photo-1560807707-8cc77767d783?w=1000&q=80&auto=format&fit=crop" alt="Maison Paws hero">
+      </div>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3>Nuestra filosofía</h3>
+        <p class="small">Cada mascota merece una experiencia calmada, segura y agradable. Nuestro equipo está capacitado para manejar animales de todas las edades y tamaños.</p>
+
+        <div class="features" style="margin-top:12px">
+          <div class="feature"><strong>Atención personalizada</strong><p class="small">Protocolos adaptados a cada mascota</p></div>
+          <div class="feature"><strong>Productos premium</strong><p class="small">Insumos seleccionados y seguros</p></div>
+          <div class="feature"><strong>Ambiente calmado</strong><p class="small">Espacios diseñados para reducir estrés</p></div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- APPOINTMENTS -->
+  <section id="appointments" style="display:none">
+    <div class="card">
+      <h3>Agendar cita</h3>
+      <form id="appointmentForm" style="margin-top:10px">
+        <div class="formRow">
+          <div class="formCol">
+            <label>Nombre del propietario</label>
+            <input id="ownerName" placeholder="Ej: Mariana Pérez" required>
+          </div>
+          <div class="formCol">
+            <label>Nombre de la mascota</label>
+            <input id="petName" placeholder="Ej: Coco" required>
+          </div>
+        </div>
+
+        <div class="formRow" style="margin-top:6px">
+          <div class="formCol">
+            <label>Tipo de mascota</label>
+            <select id="petType">
+              <option>Perro</option><option>Gato</option><option>Conejo</option><option>Ave</option><option>Pez</option>
+              <option>Hámster</option><option>Reptil</option><option>Hurón</option><option>Caballo</option><option>Otros</option>
+            </select>
+          </div>
+          <div class="formCol">
+            <label>Servicio</label>
+            <select id="serviceType">
+              <option value="Baño Básico">Baño Básico</option>
+              <option value="Corte y Estilizado">Corte y Estilizado</option>
+              <option value="Spa Completo">Spa Completo</option>
+              <option value="Vacunación">Vacunación</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="formRow">
+          <div class="formCol">
+            <label>Fecha</label><input type="date" id="apptDate" required>
+          </div>
+          <div class="formCol">
+            <label>Hora</label><input type="time" id="apptTime" required>
+          </div>
+        </div>
+
+        <label>Notas (alergias, comportamiento, preferencias)</label>
+        <textarea id="notes" rows="2" placeholder="Ej: No usar perfumes fuertes"></textarea>
+
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button class="cta" type="submit">Guardar cita</button>
+          <button type="button" class="addBtn" onclick="document.getElementById('appointmentForm').reset()">Limpiar</button>
+        </div>
+
+        <div class="small" style="margin-top:8px">Las citas se guardan localmente (prototipo). En producción conectar a servidor para confirmaciones.</div>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Citas guardadas</h3>
+      <div class="appointmentsList" id="appointmentsList"></div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop" style="display:none">
+    <div class="card">
+      <h3>Tienda Maison Paws</h3>
+      <div class="small" style="margin-top:6px">Selecciona una categoría para filtrar productos.</div>
+      <div class="scrollCats" id="catButtons" style="margin-top:12px"></div>
+      <div style="margin-top:10px;display:flex;justify-content:left">
+        <input id="searchInput" type="text" placeholder="Buscar producto..." style="padding:10px 14px;border-radius:10px;border:1px solid #e6e1d3;width:100%;max-width:340px;font-size:15px;box-shadow:0 2px 8px var(--shadow)">
+</div>
+    </div>
+
+    <div class="shopWrap">
+      <div class="card">
+        <div class="productsGrid" id="productsGrid"></div>
+      </div>
+
+      <aside class="cartPanel card" id="cartPanel">
+        <h3>Carrito de Compras</h3>
+        <h4>Tu lista de compras:</h4>
+        <div class="small" style="margin-bottom:8px">Artículos añadidos</div>
+        <div class="cartList" id="cartList"></div>
+                <div id="cartList" class="cartList"></div>
+
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0">
+            <span>Subtotal:</span><span id="cartSubtotal">$0,00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0">
+            <span>IVA (19%):</span><span id="cartIVA">$0,00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0">
+            <span>Envío:</span><span id="cartShipping">$12.000,00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid #e6e1d3;margin-top:8px;font-weight:800">
+            <span>Total:</span><span id="cartTotal">$0,00</span>
+          </div>
+        </div>
+
+        <!-- Datos de ubicación del cliente -->
+<div style="margin-top:18px">
+  <h4>Datos de envío:</h4>
+  <div class="small" style="margin-bottom:8px">Ingresa tu ubicación para el envío o entrega.</div>
+
+  <div class="formRow">
+    <div class="formCol">
+      <label>Calle y número</label>
+      <input id="street" placeholder="Ej: Calle 45 #12-34" required>
+    </div>
+    <div class="formCol">
+      <label>Bloque / Apartamento</label>
+      <input id="block" placeholder="Ej: Torre B, Apto 302">
+    </div>
+  </div>
+
+  <div class="formRow">
+    <div class="formCol">
+      <label>Código postal</label>
+      <input id="postalCode" placeholder="Ej: 110111">
+    </div>
+    <div class="formCol">
+      <label>Ciudad</label>
+      <input id="city" placeholder="Ej: Bogotá">
+    </div>
+  </div>
+
+  <div style="margin-top:10px">
+    <label>Notas de entrega</label>
+    <textarea id="deliveryNotes" rows="2" placeholder="Ej: Llamar antes de llegar, dejar en portería"></textarea>
+  </div>
+</div>
+
+
+        <!-- Métodos de pago -->
+        <div style="margin-top:14px">
+            <h4>Metodos de Pago:</h4>
+          <div class="paymentMethods" id="paymentMethods">
+            <label class="pmOption" data-method="visa">
+              <input type="radio" name="pm" value="visa">
+              <!-- Visa logo (SVG) -->
+              <svg class="logosvg" viewBox="0 0 48 32"><rect rx="4" width="48" height="32" fill="#1a1f71"/><text x="24" y="21" text-anchor="middle" fill="#fff" font-size="14" font-family="Poppins">VISA</text></svg>
+              <div class="small">Visa</div>
+            </label>
+
+            <label class="pmOption" data-method="mastercard">
+              <input type="radio" name="pm" value="mastercard">
+              <!-- Mastercard svg simplified -->
+              <svg class="logosvg" viewBox="0 0 48 32"><rect width="48" height="32" fill="#000"/><circle cx="19" cy="16" r="9" fill="#ff5f00"/><circle cx="29" cy="16" r="9" fill="#eb001b"/></svg>
+              <div class="small">Mastercard</div>
+            </label>
+
+            <label class="pmOption" data-method="paypal">
+              <input type="radio" name="pm" value="paypal">
+              <svg class="logosvg" viewBox="0 0 48 32"><rect width="48" height="32" fill="#003087"/><text x="24" y="21" text-anchor="middle" fill="#fff" font-size="12" font-family="Poppins">PayPal</text></svg>
+              <div class="small">PayPal</div>
+            </label>
+          </div>
+
+          <div class="payForm" id="payForm">
+            <!-- dynamic: fields shown based on selection -->
+            <div id="cardFields" style="display:none;margin-top:8px">
+              <label>Número de tarjeta</label>
+              <input id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+              <div class="payRow" style="margin-top:8px">
+                <div class="formCol">
+                  <label>Mes / Año</label>
+                  <input id="cardExp" placeholder="MM/AA">
+                </div>
+                <div class="formCol">
+                  <label>CVV</label>
+                  <input id="cardCvv" placeholder="123">
+                </div>
+              </div>
+              <label style="margin-top:8px">Nombre en la tarjeta</label>
+              <input id="cardName" placeholder="Nombre completo">
+            </div>
+
+            <div id="paypalFields" style="display:none;margin-top:8px">
+              <label>Correo PayPal</label>
+              <input id="paypalEmail" placeholder="email@ejemplo.com">
+            </div>
+
+            <button class="checkoutBtn" onclick="simulatePayment()">Pagar</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<div class="floatAdd" id="floatAdd">Añadido</div>
+
+<footer>
+  © Maison Paws • Prototipo — los datos se guardan localmente
+</footer>
+
+<script>
+/* Helpers */
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function load(k,def){const t=localStorage.getItem(k);return t?JSON.parse(t):def}
+
+/* Format COP with thousands '.' and ',00' */
+function formatCOP(n){
+  const rounded = Math.round(n);
+  const s = rounded.toString();
+  let out = '';
+  let cnt = 0;
+  for(let i = s.length - 1; i >= 0; i--){
+    out = s[i] + out;
+    cnt++;
+    if(cnt % 3 === 0 && i !== 0) out = '.' + out;
+  }
+  return '$' + out + ',00';
+}
+
+/* Navigation */
+function showSection(id){
+  document.querySelectorAll('main section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  if(id==='home') document.getElementById('nav-home').classList.add('active');
+  if(id==='appointments') document.getElementById('nav-appt').classList.add('active');
+  if(id==='shop') document.getElementById('nav-shop').classList.add('active');
+  if(id==='shop') openCartPanel();
+}
+
+/* Cart toggle */
+let cartVisible = true;
+const cartPanelEl = document.getElementById('cartPanel');
+const cartToggleEl = document.getElementById('cartToggle');
+const floatAdd = document.getElementById('floatAdd');
+function toggleCart(){ cartVisible = !cartVisible; cartPanelEl.style.display = cartVisible ? 'block' : 'none'; }
+function openCartPanel(){ cartPanelEl.style.display = 'block'; cartVisible = true; }
+
+/* Appointments: relative time helper */
+function timeAgo(timestamp){
+  const now = new Date();
+  const then = new Date(timestamp);
+  const diff = Math.floor((now - then)/1000); // seconds
+  if(diff < 60) return `Hace ${diff} ${diff===1?'segundo':'segundos'}`;
+  const mins = Math.floor(diff/60);
+  if(mins < 60) return `Hace ${mins} ${mins===1?'minuto':'minutos'}`;
+  const hours = Math.floor(mins/60);
+  if(hours < 24) return `Hace ${hours} ${hours===1?'hora':'horas'}`;
+  const days = Math.floor(hours/24);
+  return `Hace ${days} ${days===1?'día':'días'}`;
+}
+
+/* Appointments data */
+let appointments = load('mp_appointments',[]);
+
+const petPhotos = {
+  "Perro":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhAuv6m8VEdcDFXVeGW5o8gDAmyka01EB1PA&s",
+  "Gato":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlJKj_UXYTxw2EhsDlju2w_E4770zQt0L_Lg&s",
+  "Conejo":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3db8sD89Q0St5hE8M3QzmIZVO2YXeyZqtGg&s",
+  "Ave":"https://i.ytimg.com/vi/Oi0aWYU-xik/maxresdefault.jpg",
+  "Pez":"https://images.unsplash.com/photo-1526406915892-8af1f1a5d1aa?w=400&q=60&auto=format&fit=crop",
+  "Hámster":"https://images.unsplash.com/photo-1619983081563-430c5250c64b?w=400&q=60&auto=format&fit=crop",
+  "Reptil":"https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&q=60&auto=format&fit=crop",
+  "Hurón":"https://images.unsplash.com/photo-1602340730003-3de469b3aab9?w=400&q=60&auto=format&fit=crop",
+  "Caballo":"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=60&auto=format&fit=crop",
+  "Otros":"https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=400&q=60&auto=format&fit=crop"
+};
+
+const apptForm = document.getElementById('appointmentForm');
+apptForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const appt = {
+    id: 'A'+Date.now(),
+    owner: document.getElementById('ownerName').value.trim(),
+    pet: document.getElementById('petName').value.trim(),
+    type: document.getElementById('petType').value,
+    service: document.getElementById('serviceType').value,
+    date: document.getElementById('apptDate').value,
+    time: document.getElementById('apptTime').value,
+    notes: document.getElementById('notes').value.trim(),
+    createdAt: new Date().toISOString(),
+    photo: petPhotos[document.getElementById('petType').value] || petPhotos['Otros']
+  };
+
+  // validate date/time
+  const dt = appt.date && appt.time ? new Date(appt.date + 'T' + appt.time) : null;
+  if(dt && dt < new Date()){
+    if(!confirm('La fecha/hora seleccionada está en el pasado. ¿Guardar igual?')) return;
+  }
+
+  appointments.push(appt);
+  save('mp_appointments', appointments);
+  renderAppointments();
+  apptForm.reset();
+  alert('Cita guardada ✅');
+});
+
+function renderAppointments(){
+  const list = document.getElementById('appointmentsList');
+  list.innerHTML = '';
+  if(!appointments.length){ list.innerHTML = '<div class="small">No hay citas guardadas.</div>'; return; }
+  // show newest first
+  appointments.slice().reverse().forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'appCard';
+    div.innerHTML = `
+      <img src="${a.photo}" alt="${a.type}">
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong style="font-size:15px">${a.pet}</strong> <div style="font-size:13px;color:var(--muted)">${a.type}</div></div>
+          <div style="font-size:12px;color:var(--muted)">${timeAgo(a.createdAt)}</div>
+        </div>
+        <div style="color:var(--muted);font-size:13px;margin-top:6px">${a.service} — ${a.date} ${a.time}</div>
+        <div style="font-size:13px;margin-top:6px;color:var(--muted)">Dueño: <strong>${a.owner}</strong></div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+renderAppointments();
+
+/* Products and Cart (24 products updated) */
+const PRODUCTS = [
+  {id:'p01',cat:'Alimentos',name:'Croquetas Premium 5kg',price:85000,discount:15,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHePOvEfXHP7DcpsxyDdd1hrlqP52vf5CBng&s'},
+  {id:'p02',cat:'Alimentos',name:'Comida húmeda 400g',price:7200,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOUxoDvsfoKGXI60PYLoWMPruKPqqb_V3X6g&s'},
+  {id:'p03',cat:'Alimentos',name:'Snacks dentales',price:12000,discount:10,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1ZuO9EDPs0muYbE_uLV5l23Y3dKoQ2rLh-Q&s'},
+  {id:'p04',cat:'Accesorios',name:'Collar de piel',price:45000,discount:20,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrdPz4t7JhEpBktPqtx_OgSFvKIuNg0Uxb9g&s'},
+  {id:'p05',cat:'Accesorios',name:'Correa retráctil',price:38000,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3EJip0DuLdNsWdbILSI7e7AwHh6y8qgdgHw&s'},
+  {id:'p06',cat:'Accesorios',name:'Cama ortopédica',price:120000,discount:25,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr9dygXynQPFumbrUR5P1D9YRnob_LCnx6ow&s'},
+  {id:'p07',cat:'Juguetes',name:'Pelota sonora',price:8000,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6HuO2GRR4B0azTLR0ap8uWAEXetO6doihqQ&s'},
+  {id:'p08',cat:'Juguetes',name:'Cuerda resistente',price:9000,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpXCkScjjtMWx7v0DD8ysnp5PKiTI2Af47cg&s'},
+  {id:'p09',cat:'Juguetes',name:'Ratón de tela',price:5500,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFfjjbbYVP9cMzlt2Wjcz0OAYJV-r976bObA&s'},
+  {id:'p10',cat:'Higiene',name:'Shampoo hipoalergénico',price:22000,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSglbmuO-o9tqOPFreB5tbwOFkYfLCtOTH1Q&s'},
+  {id:'p11',cat:'Higiene',name:'Toallas húmedas',price:7000,discount:0,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShY0KcrVaptIlgJI1VrdrWzpd1fOaEm36u0A&s'},
+  {id:'p12',cat:'Higiene',name:'Cepillo desenredante',price:18000,discount:15,img:'https://images.unsplash.com/photo-1583511655826-1c8f7f0b5f39?w=1200&q=60'},
+  {id:'p13',cat:'Higiene',name:'Cortaúñas profesional',price:10000,discount:0,img:'https://images.unsplash.com/photo-1581578017426-49f0f3b3c7f2?w=1200&q=60'},
+  {id:'p14',cat:'Ropa',name:'Suéter térmico',price:42000,discount:30,img:'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=1200&q=60'},
+  {id:'p15',cat:'Ropa',name:'Impermeable ligero',price:65000,discount:0,img:'https://images.unsplash.com/photo-1601758124095-27b9c5f2f9b0?w=1200&q=60'},
+  {id:'p16',cat:'Ropa',name:'Botitas antideslizantes',price:32000,discount:20,img:'https://images.unsplash.com/photo-1616401782433-2b90e1c3f4a0?w=1200&q=60'},
+  {id:'p17',cat:'Accesorios',name:'subfusil MP5 + 6 Cargadores',price:3600000,discount:0,img:'https://sherloc.unodc.org/cld/uploads/images/education/tertiary/Modules/Firearms/module_02_figure_6a.jpg'},
+  {id:'p18',cat:'Salud',name:'Suplemento piel y pelo',price:48000,discount:0,img:'https://images.unsplash.com/photo-1622206973435-3f0d6d2b1a2e?w=1200&q=60'},
+  {id:'p19',cat:'Salud',name:'Multivitamínicos',price:35000,discount:10,img:'https://images.unsplash.com/photo-1580281657521-1e6c0f2d6d8b?w=1200&q=60'},
+  {id:'p20',cat:'Juguetes',name:'Puzzle alimenticio',price:29000,discount:0,img:'https://images.unsplash.com/photo-1601758176071-0d3b8e8c4f1a?w=1200&q=60'},
+  {id:'p21',cat:'Alimentos',name:'Bolsas porciones 1kg',price:22000,discount:0,img:'https://images.unsplash.com/photo-1598133894008-23b36f0d1a3b?w=1200&q=60'},
+  {id:'p22',cat:'Accesorios',name:'Gafas de sol mascota',price:14000,discount:0,img:'https://images.unsplash.com/photo-1583511655826-1c8f7f0b5f39?w=1200&q=60'},
+  {id:'p23',cat:'Higiene',name:'Spray desodorante',price:12000,discount:30,img:'https://images.unsplash.com/photo-1583511655826-1c8f7f0b5f39?w=1200&q=60'},
+  {id:'p24',cat:'Accesorios',name:'Identificador con placa',price:9000,discount:0,img:'https://images.unsplash.com/photo-1601758176072-3f2f0c6f1f2b?w=1200&q=60'}
+];
+
+let cart = load('mp_cart',{}); // { productId: qty }
+
+/* Helper para calcular precio final con descuento */
+function finalPrice(prod){
+  if(!prod.discount || prod.discount === 0) return prod.price;
+  return Math.round(prod.price * (1 - prod.discount/100));
+}
+
+/* Render categories */
+let currentCat = 'Todos';
+function renderCategories(){
+  const bar = document.getElementById('catButtons');
+  const cats = ['Todos', ...Array.from(new Set(PRODUCTS.map(p=>p.cat)))];
+  bar.innerHTML = '';
+  cats.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.textContent = c;
+    btn.onclick = ()=>{ currentCat = c; renderProducts(); renderCategories(); };
+    btn.style.background = c===currentCat ? 'var(--accent)' : '#fff';
+    btn.style.color = c===currentCat ? '#fff' : '#4b4b4b';
+    btn.style.border = '1.5px solid ' + (c===currentCat ? 'var(--accent)' : '#e6e1d3');
+    btn.style.borderRadius = '14px';
+    btn.style.padding = '8px 18px';
+    btn.style.fontWeight = '600';
+    btn.style.fontFamily = '"Poppins",sans-serif';
+    btn.style.fontSize = '15px';
+    btn.style.marginRight = '8px';
+    btn.style.cursor = 'pointer';
+    btn.style.transition = 'all .18s cubic-bezier(.2,.9,.2,1)';
+    btn.onmouseover = ()=>{ if(c!==currentCat) btn.style.background='#f7f3ed'; };
+    btn.onmouseout = ()=>{ if(c!==currentCat) btn.style.background='#fff'; };
+    bar.appendChild(btn);
+  });
+}
+
+/* Render product cards con descuentos */
+let searchTerm = '';
+
+document.getElementById('searchInput').addEventListener('input', function(){
+  searchTerm = this.value.trim().toLowerCase();
+  renderProducts();
+});
+
+function renderProducts(){
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = '';
+  let visible = PRODUCTS.filter(p => currentCat === 'Todos' || p.cat === currentCat);
+  if(searchTerm){
+    visible = visible.filter(p =>
+      p.name.toLowerCase().includes(searchTerm) ||
+      p.cat.toLowerCase().includes(searchTerm)
+    );
+  }
+  if(visible.length === 0){
+    grid.innerHTML = '<div class="small" style="padding:18px;text-align:center;color:var(--muted)">No se encontraron productos.</div>';
+    return;
+  }
+  
+  visible.forEach(p=>{
+    const fp = finalPrice(p);
+    const hasDiscount = p.discount && p.discount > 0;
+    
+    const priceHTML = hasDiscount
+      ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+           <span style="background:#2fb36b;color:#fff;font-weight:800;padding:2px 8px;border-radius:8px;font-size:13px">-${p.discount}%</span>
+           <span style="text-decoration:line-through;color:#9b9b9b;font-size:13px">${formatCOP(p.price)}</span>
+           <span style="color:#2fb36b;font-weight:800">${formatCOP(fp)}</span>
+         </div>`
+      : `<div class="productPrice">${formatCOP(p.price)}</div>`;
+    
+    const card = document.createElement('div');
+    card.className = 'productCard';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px">
+        <img class="productImg" src="${p.img}" alt="${p.name}">
+      </div>
+      <div style="flex:1">
+        <div class="productTitle">${p.name}</div>
+        ${priceHTML}
+      </div>
+      <button class="addBtn" data-id="${p.id}" style="margin-top:6px">Agregar al carrito</button>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('.addBtn').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.getAttribute('data-id');
+      addToCartAnimated(id, b);
+    }
+  });
+}
+
+/* Add to cart + animation */
+function addToCartAnimated(productId, btn){
+  cart[productId] = (cart[productId]||0) + 1;
+  save('mp_cart', cart);
+  renderCart();
+
+  // quick button effect
+  btn.classList.add('added');
+  const prev = btn.textContent;
+  btn.textContent = 'Añadido';
+  setTimeout(()=>{ btn.classList.remove('added'); btn.textContent = prev; },900);
+
+  // show float
+  floatAdd.classList.add('show');
+  setTimeout(()=>floatAdd.classList.remove('show'),900);
+}
+
+/* Cart panel */
+const IVA_RATE = 0.19;
+const SHIPPING_COST = 12000;
+
+/* Render Cart */
+function renderCart(){
+  const list = document.getElementById('cartList');
+  const countEl = document.getElementById('cartCount');
+  if(!list) return;
+  list.innerHTML = '';
+  let subtotal = 0;
+  let totalCount = 0;
+  Object.keys(cart).forEach(id=>{
+    const qty = cart[id];
+    const prod = PRODUCTS.find(p=> String(p.id) === String(id));
+    if(!prod) return;
+
+    const priceU = finalPrice(prod); // usa precio con descuento si existe
+    subtotal += priceU * qty;
+    totalCount += qty;
+
+    const row = document.createElement('div');
+    row.className = 'cartItem';
+    row.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center">
+        <img src="${prod.img}" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
+        <div style="font-size:13px">
+          <div style="font-weight:700">${prod.name}</div>
+          <div class="small">${formatCOP(priceU)} x ${qty}</div>
+        </div>
+      </div>
+      <div>
+        <button class="trashBtn" data-id="${id}" title="Eliminar">🗑️</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  document.querySelectorAll('.trashBtn').forEach(bt=>bt.onclick = ()=>{
+    const id = bt.getAttribute('data-id');
+    delete cart[id];
+    save('mp_cart', cart);
+    renderCart();
+  });
+
+  const iva = subtotal * IVA_RATE;
+  const total = subtotal + iva + SHIPPING_COST;
+
+  document.getElementById('cartSubtotal') && (document.getElementById('cartSubtotal').textContent = formatCOP(subtotal));
+  document.getElementById('cartIVA') && (document.getElementById('cartIVA').textContent = formatCOP(iva));
+  document.getElementById('cartShipping') && (document.getElementById('cartShipping').textContent = formatCOP(SHIPPING_COST));
+  document.getElementById('cartTotal') && (document.getElementById('cartTotal').textContent = formatCOP(total));
+  if(countEl) countEl.textContent = totalCount;
+}
+
+/* Payment method selection logic */
+document.getElementById('paymentMethods').addEventListener('click', e=>{
+  const target = e.target.closest('.pmOption');
+  if(!target) return;
+  document.querySelectorAll('.pmOption').forEach(el=>el.classList.remove('active'));
+  target.classList.add('active');
+  const method = target.getAttribute('data-method');
+  // show fields
+  document.getElementById('cardFields').style.display = (method==='visa' || method==='mastercard') ? 'block' : 'none';
+  document.getElementById('paypalFields').style.display = (method==='paypal') ? 'block' : 'none';
+});
+
+/* Simulate payment */
+
+function getUserLocationData(){
+  return {
+    street: document.getElementById('street')?.value.trim() || '',
+    block: document.getElementById('block')?.value.trim() || '',
+    postal: document.getElementById('postalCode')?.value.trim() || '',
+    city: document.getElementById('city')?.value.trim() || '',
+    notes: document.getElementById('deliveryNotes')?.value.trim() || ''
+  };
+}
+
+
+function simulatePayment(){
+  if(Object.keys(cart).length===0){ alert('Carrito vacío'); return; }
+  // detect method
+  const active = document.querySelector('.pmOption.active');
+  if(!active){ alert('Selecciona un método de pago'); return; }
+  const method = active.getAttribute('data-method');
+  if(method==='paypal'){
+    const email = document.getElementById('paypalEmail').value.trim();
+    if(!email){ alert('Ingrese correo de PayPal'); return; }
+  } else {
+    const num = document.getElementById('cardNumber').value.replace(/\s+/g,'').trim();
+    const exp = document.getElementById('cardExp').value.trim();
+    const cvv = document.getElementById('cardCvv').value.trim();
+    const name = document.getElementById('cardName').value.trim();
+    if(!num || !exp || !cvv || !name){ alert('Complete los datos de la tarjeta'); return; }
+
+  }
+
+  // Simulate processing
+  setTimeout(()=>{
+    // Save order simple history
+    const orders = load('mp_orders',[]);
+    orders.push({id:'ORD'+Date.now(),date:new Date().toISOString(),items:cart});
+    save('mp_orders',orders);
+
+    // clear cart
+    cart = {};
+    save('mp_cart', cart);
+    renderCart();
+
+    alert('Pago completado - Gracias por elegir Maison Paws 💛');
+  },800);
+}
+
+/* Checkout button fallback */
+function checkout(){ simulatePayment(); }
+
+/* Init */
+renderCategories();
+renderProducts();
+renderCart();
+
+/* Responsive cart: hide on small screens */
+function adjustCartForViewport(){
+  if(window.innerWidth < 900){
+    cartPanelEl.style.display = 'none';
+    cartVisible = false;
+  } else {
+    cartPanelEl.style.display = 'block';
+    cartVisible = true;
+  }
+}
+adjustCartForViewport();
+window.addEventListener('resize', adjustCartForViewport);
+
+/* Toggle from header */
+function toggleCart(){
+  cartVisible = !cartVisible;
+  cartPanelEl.style.display = cartVisible ? 'block' : 'none';
+}
+
+/* start on home */
+showSection('home');
+
+</script>
+</body>
+</html>
